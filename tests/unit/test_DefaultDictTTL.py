@@ -10,6 +10,10 @@ class TestDefaultDictTTL(unittest.TestCase):
         self.dict_ttl = DefaultDictTTL(10)
         [self.dict_ttl.append_values(k, v) for k, v in self.data]
 
+        self.new_data = [('c', 3), ('c', 5),('a',10),('a',20)]
+        self.dict_ttl1 = DefaultDictTTL(3)
+        [self.dict_ttl1.append_values(k, v) for k, v in self.new_data]
+
     @patch('time.sleep', return_value=None)
     def test_is_expired(self, patched_time_sleep):
         now = time.time()
@@ -117,6 +121,19 @@ class TestDefaultDictTTL(unittest.TestCase):
     def test_values_without_ttl(self):
         self.assertEqual(self.dict_ttl.values_without_ttl(),[[10,20],[2,4]])
         self.assertNotEqual(self.dict_ttl.values_without_ttl(),[1,2,3])
+
+    def test_dict_union(self):
+        self.dict_ttl2 = DefaultDictTTL(3).dict_union(self.dict_ttl,self.dict_ttl1)
+        self.assertEqual(list(self.dict_ttl2.keys()),['a','blue','c'])
+        self.values_new = [i[0][1] for i in list(self.dict_ttl2.values())]
+        self.assertEqual(self.values_new,[[10,20],[2,4],[3,5]])
+
+    def test_dict_intersection(self):
+        self.dict_ttl2 = DefaultDictTTL(3).dict_intersection(self.dict_ttl, self.dict_ttl1)
+        self.assertEqual(list(self.dict_ttl2.keys()), ['a'])
+        self.values_new = [i[0][1] for i in list(self.dict_ttl2.values())]
+        self.assertEqual(self.values_new, [[10, 20]])
+
 
 if __name__ == '__main__':
     unittest.TestCase()
