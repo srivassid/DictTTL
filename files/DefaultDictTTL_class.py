@@ -1,32 +1,39 @@
 from threading import RLock
 from collections import defaultdict
-import time
+import time, math
 
 class DefaultDictTTL(defaultdict):
 
     #initialize the dict with ttl and possibly values
     def __init__(self, time_to_live, *args, **kwargs):
-        self.data = defaultdict(self._empty)
+        self.data = defaultdict(list)
         self._time_to_live = time_to_live
         self._lock = RLock()
         self.update(*args, **kwargs)
 
     def _empty(self):
-        return list()
+        return list
 
     def __repr__(self):
-        return '<TTLDict@%#08x; ttl=%r, Dict=%r;>' % (
+        self._purge()
+        return '<DefaultDictTTL@%#08x; ttl=%r, Dict=%r;>' % (
             id(self), self._time_to_live, self.data)
 
     #check if key is expired by comparing value to now
     def is_expired(self, key, now=None):
+        expire, _value = 0,0
         with self._lock:
             if now is None:
                 now = time.time()
-            expire, _value = self.data[key]
+            try:
+                expire, _value = self.data[key][0][0],self.data[key][0][1]
 
-            if expire and expire < now:
-                return key
+            except :
+                if expire == 0 and _value == 0:
+                    expire = time.time() + 10
+            finally:
+                if expire and expire < now:
+                    return key
 
     #delete those keys which have been expired by checking is_expired method
     def _purge(self):
@@ -40,22 +47,24 @@ class DefaultDictTTL(defaultdict):
         if now is None:
             now = time.time()
         with self._lock:
-            value = self[key]
-            self.data[key] =  (now + ttl, value)
+            value = self[key][0][1]
+            del self[key]
+            self.data[key] =  [(now + ttl, value)]
 
     #get ttl for a key
     def get_ttl(self, key, now=None):
         if now is None:
             now = time.time()
         with self._lock:
-            expire, _value = self.data[key]
+            expire = self.data[key][0][0]
             return expire - now
 
     #set a manual expiration time for a key in epoch
     def expire_at(self, key, timestamp):
         with self._lock:
-            value = self.data[key]
-            self.data[key] = (timestamp, value)
+            value = self[key][0][1]
+            del self[key]
+            self.data[key] = [(timestamp, value)]
 
     #built in method that yields and iterator
     def __iter__(self):
@@ -72,12 +81,40 @@ class DefaultDictTTL(defaultdict):
             else:
                 expire = time.time() + self._time_to_live
             # super().__setitem__(key, (expire, value))
-            self.data[key] = (expire, value)
+            # self.data[key] = (expire, value)
+            if len(self.data[key]) == 0:
+                self.data[key].append((expire,[value]))
+            else:
+                self.data[key][0][1].append(value)
+
+    def append_values(self, key, value):
+        with self._lock:
+            if self._time_to_live is None:
+                expire = None
+            else:
+                expire = time.time() + self._time_to_live
+            # super().__setitem__(key, (expire, value))
+            # self.data[key] = (expire, value)
+            if len(self.data[key]) == 0:
+                self.data[key].append((expire,[value]))
+            else:
+                self.data[key][0][1].append(value)
+
+    def append(self, key, value):
+        print("for k,v in d:\n\tdict_ttl2.append_values(k,v)")
 
     #delete item from dict
     def __delitem__(self, key):
         with self._lock:
             del self.data[key]
+
+    def delete_key_item(self,key, value):
+        with self._lock:
+            # if value in self.data[key][0][1]:
+            try:
+                self.data[key][0][1].remove(value)
+            except Exception as e:
+                print("Key not found " + str(e))
 
     #check length of dict after purging expired items
     def __len__(self):
@@ -89,9 +126,11 @@ class DefaultDictTTL(defaultdict):
     def __getitem__(self, key):
         with self._lock:
             if self.is_expired(key):
-                del self.data[key]
-                raise KeyError
-        return self.data[key][1]
+                try:
+                    del self.data[key]
+                except Exception as e:
+                    print("Key not found " + str(KeyError))
+        return self.data[key]
 
     #get keys after purging expired ones
     def keys(self):
@@ -103,13 +142,7 @@ class DefaultDictTTL(defaultdict):
     def items(self):
         with self._lock:
             self._purge()
-            return [(k,v[1]) for k,v in self.data.items()]
-
-    #get key value pair after purging expired keys in key, value, timestamp order
-    def _items_ttl_reverse(self, data):
-        with self._lock:
-            self._purge()
-            return [(k,(v[1],v[0])) for k,v in data.items()]
+            return [(k,v[0][1]) for k,v in self.data.items()]
 
     #get key value pair in key, timestamp, order value
     def ttl_items(self):
@@ -127,7 +160,7 @@ class DefaultDictTTL(defaultdict):
     def values_without_ttl(self):
         with self._lock:
             self._purge()
-            return [v[1][1] for v in self.data.items()]
+            return [v[0][1] for k,v in self.data.items()]
 
     #get value for a key in O(1) time
     def get(self, key, default=None):
@@ -136,50 +169,71 @@ class DefaultDictTTL(defaultdict):
         except KeyError:
             return default
 
-    #sort keys of dictionary by their value in ascending or descending order
-    def sort_by_value(self, reverse=None):
-        with self._lock:
-            self._purge()
-            return {k: (v[0],v[1]) for k, v in sorted(self._items_ttl_reverse(self.data), key=lambda item: item[1], reverse=reverse)}
-
-    #invert mapping of a dict, {a:1} becomes {1:a}
-    def invert_dict_map(self):
-        with self._lock:
-            self._purge()
-            self.data_new = DefaultDictTTL(self._time_to_live)
-            for k,v in self.data.items():
-                self.data_new[v[1]] = (k)
-            return self.data_new
-
-    def modify_with_old_ttl(self, key, value):
-        with self._lock:
-            if self._time_to_live is None:
-                expire = None
-            else:
-                expire, value = self.data[key]
-                print("expire is " + str(expire))
-            self.data[key] = (expire, value)
-
     #union of items of two dicts
     def dict_union(self, dict1, dict2):
         with self._lock:
             self._purge()
-            return  {**dict1, **dict2}
+            return {**dict1, **dict2}
 
     #intersection of items of two dicts
     def dict_intersection(self, dict1, dict2):
         with self._lock:
             self._purge()
-            return dict((set(list(dict1.items())) & set(list(dict2.items()))))
-
+            self.dict = defaultdict(list)
+            self.common_keys = list([dict1.keys() & dict2.keys()][0])
+            for i in self.common_keys:
+                if dict1.get(i)[0][1] == dict2.get(i)[0][1]:
+                    self.dict[i] = dict2.get(i)
+            return self.dict
 
 
 dict_ttl = DefaultDictTTL(3)
+s = [('yellow', 1), ('blue', 2), ('yellow', 3), ('blue', 4), ('red', 1),('green','abc'),('green','and')]
+for k,v in s:
+    dict_ttl.append_values(k,v)
 dict_ttl['a'] = 10
-dict_ttl['b'] = 10
-print(dict_ttl.items())
-time.sleep(5)
-print(dict_ttl.items())
+dict_ttl['a'] = 20
+d = [('a',10),('a',20),('blue',2),('blue',4)]
+dict_ttl2 = DefaultDictTTL(3,d)
+# for k,v in d:
+#     dict_ttl2.append_values(k,v)
+#     dict_ttl2[k].append(v)
+[dict_ttl2.append_values(k,v) for k,v in d]
+print(dict_ttl2)
 
-# for k,v in dict_ttl.items():
-#     print(k, v)
+
+# print(dict_ttl2.get('a'))
+# print(list((DefaultDictTTL(2).dict_union(dict_ttl,dict_ttl2).values())))
+# data = [i[0][1] for i in list((DefaultDictTTL(2).dict_union(dict_ttl,dict_ttl2).values()))]
+print(dict_ttl)
+print(list(DefaultDictTTL(2).dict_union(dict_ttl,dict_ttl2).items()))
+# print(DefaultDictTTL(3).dict_intersection(dict_ttl,dict_ttl2))
+# common_keys = list([dict_ttl2.keys() & dict_ttl.keys()][0])
+# print((common_keys))
+# for i in common_keys:
+#     if dict_ttl.get(i)[0][1] == dict_ttl2.get(i)[0][1]:
+#         print(i)
+# for i in dict_ttl.items():
+#     for j in dict_ttl2.items():
+#         if i[0] == j[0] and i[1] == j[1]:
+
+# print(dict_ttl.get('a'))
+# print(dict_ttl.items())
+# print(dict_ttl2.items())
+# print(set.intersection(*(set(d[k]) for k in my_list)))
+# print(set(list(dict_ttl.items())) & set(list(dict_ttl2.items())))
+# dict_ttl.set_ttl('yellow',10)
+# print(dict_ttl.expire_at('yellow',time.time() + 10))
+# dict_ttl.delete_key_item('yellow',1)
+# print(dict_ttl)
+# try:
+#     dict_ttl.delete_key_item('yellow',4)
+# except Exception as ValueError:
+#     print(ValueError)
+# print(len(dict_ttl))
+# time.sleep(2)
+# for k in dict_ttl.__iter__():
+#     print(k)
+# print(dict_ttl.is_expired('a'))
+# print(dict_ttl)
+# print(dict_ttl)
