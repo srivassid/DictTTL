@@ -11,9 +11,6 @@ class DefaultDictTTL(defaultdict):
         self._lock = RLock()
         self.update(*args, **kwargs)
 
-    def _empty(self):
-        return list
-
     def __repr__(self):
         self._purge()
         return '<DefaultDictTTL@%#08x; ttl=%r, Dict=%r;>' % (
