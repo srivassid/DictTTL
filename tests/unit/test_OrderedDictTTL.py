@@ -1,5 +1,5 @@
 import unittest
-from OrderedDictTTL_class import OrderedDictTTL
+from ...files.OrderedDictTTL_class import OrderedDictTTL
 import time
 from unittest.mock import patch
 import math
@@ -10,8 +10,6 @@ class TestOrderedDictTTL(unittest.TestCase):
 
     @patch('time.sleep', return_value=None)
     def test_is_expired(self, patched_time_sleep):
-        # dict_ttl = OrderedDictTTL(10, a=1, b=2)
-
         now = time.time()
         self.dict_ttl = OrderedDictTTL(10, a=1, b=2)
         self.assertFalse(self.dict_ttl.is_expired('a'))

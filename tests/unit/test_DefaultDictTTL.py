@@ -1,5 +1,5 @@
 import unittest
-from DefaultDictTTL_class import DefaultDictTTL
+from ...files.DefaultDictTTL_class import DefaultDictTTL
 import time
 from unittest.mock import patch
 import math
