@@ -12,7 +12,7 @@ class OrderedDictTTL(OrderedDict):
         self.update(*args, **kwargs)
 
     def __repr__(self):
-        return '<TTLDict@%#08x; ttl=%r, Dict=%r;>' % (
+        return '<OrderedDictTTL@%#08x; ttl=%r, Dict=%r;>' % (
             id(self), self._time_to_live, self.data)
 
     #check if key is expired by comparing value to now
