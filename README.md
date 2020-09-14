@@ -326,3 +326,10 @@ Output of the previous code is
 [(5, (1600072079.488873, 3)), (3, (1600072079.4888773, 4)), (2, (1600072079.4888792, 1)), (4, (1600072079.4888806, 5)), (1, (1600072079.488882, 3))]
 <TTLDict@0x7fafb9b74da0; ttl=30, Dict={3: (1600072079.4889877, 1), 4: (1600072079.4889824, 3), 1: (1600072079.4889843, 2), 5: (1600072079.488986, 4)};>
 ```
+
+<h3>References</h3>
+This work builds upon the following works
+
+https://github.com/jvtm/ttldict
+
+https://github.com/mobilityhouse/ttldict
