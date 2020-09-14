@@ -51,7 +51,7 @@ class DictTTL(MutableMapping):
     #set a manual expiration time for a key in epoch
     def expire_at(self, key, timestamp):
         with self._lock:
-            value = self.data[key]
+            value = self.data[key][1]
             self.data[key] = (timestamp, value)
 
     #built in method that yields and iterator
