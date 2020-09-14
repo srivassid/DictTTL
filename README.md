@@ -19,17 +19,17 @@ It it to be mentioned that once the TTL attached to the keys expire, they are no
 
 To import regular dictionary with keys that have TTL, type
 ```
-from DictTTL.files.DictTTL_class import DictTTL
+from DictTTL.DictTTL import DictTTL
 ```
 
 To import OrdereDict with keys that have TTL, type
 ```
-from DictTTL.files.OrderedDictTTL_class import OrderedDictTTL
+from DictTTL.OrderedDictTTL import OrderedDictTTL
 ```
 
 To import defaultDict(list) with keys that have TTL, type 
 ```
-from DictTTL.files.DefaultDictTTL_class import DefaultDictTTL
+from DictTTL.DefaultDictTTL import DefaultDictTTL
 ```
 
 
