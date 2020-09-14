@@ -1,6 +1,12 @@
-<h2>Dictionary with expiring keys (pip install dictttl)</h2>
+<h2>Dictionary with expiring keys</h2>
 
 <h4>A dictionary with a ttl attached to the keys which disappear after a particular time. Includes dict(), OrderedDict() and defaultDict(list)</h4>
+
+
+To install, type
+```
+pip install dictttl
+```
 
 
 Regular dict and orderedDict have data format defined as <b>{key:(timestamp, value)}</b> whereas defaultDict(list) has it's data format defined as 
