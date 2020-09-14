@@ -381,6 +381,7 @@ Output of the previous code is
 The results for appending data, search, delete and iteration are
 
 ```
+DefaultDictTTL timeit, append get delete iter
 4.850327831998584
 0.000069
 0.01623199600726366
