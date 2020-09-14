@@ -73,19 +73,24 @@ This syntax makes sure every key has the same TTL provided in the DictTTL(), Ord
 
 <h4> Set and Get </h4>
 To set a value for regular dict and OrderedDict, type
+
 ```
 dict[key] = value
 dict_ttl[2] = 10
 ```
+
 For defaultDict(list), you can do so by
+
 ```
 dict_ttl[2] = [10] # or [10,20]
 ```
+
 Note that initializing a key with this does not remove the old value, it appends to it. 
 To set a new value, delete the key first by ```del dict_ttl[2]``` and then set a new value.
 
 
 To get the value for any type of dict, type
+
 ```
 print(dict[key])
 print(dict_ttl[2] = 10)
@@ -95,10 +100,13 @@ print(dict_ttl[2] = 10)
 
 <h4> keys(), values() and items()</h4>
 To get the keys of any type of dict, type
+
 ```
 dict_ttl.keys()
 ```
+
 The result would be (for regularDict, orderedDict and defaultDict(list), in order)
+
 ```
 dict_keys([8, 3, 4, 9, 6, 5])
 odict_keys([7, 8, 6, 9, 10])
@@ -106,10 +114,13 @@ dict_keys([4, 5, 1, 2])
 ```
 
 To get the values of any type of dict, type 
+
 ```
 dict_ttl.values()
 ```
+
 This would give you the values with TTL of each respective key
+
 ```
 [(1600066853.5221877, 2), (1600066853.522191, 9), (1600066853.5221927, 5), (1600066853.5221937, 10), (1600066853.5221949, 1), (1600066853.522196, 10), (1600066853.5221975, 9), (1600066853.5221984, 3)]
 [(1600066853.522308, 4), (1600066853.5223105, 6), (1600066853.5223117, 5), (1600066853.5223129, 8), (1600066853.522314, 3), (1600066853.5223153, 2)]
@@ -117,10 +128,13 @@ This would give you the values with TTL of each respective key
 ```
 
 To get the values of any type of dict without TTL values, type
+
 ```
 dict_ttl.values_without_ttl()
 ```
+
 This would give you
+
 ```
 [1, 6, 7, 1, 6, 10, 9]
 [10, 3, 6, 1, 8, 5]
@@ -128,10 +142,13 @@ This would give you
 ```
 
 To get the items (both keys and values) of any type of dict, type
+
 ```
 dict_ttl.items()
 ```
+
 This would give you the key, value pair without the timestamp.
+
 ```
 [(1, 6), (5, 10), (8, 7), (6, 1), (3, 9), (7, 4), (2, 6)]
 [(2, 5), (9, 2), (7, 8), (6, 3), (10, 8), (8, 7)]
@@ -139,10 +156,13 @@ This would give you the key, value pair without the timestamp.
 ```
 
 To get the complete representation of the dict, keys with ttl and values, type
+
 ```
 dict_ttl.ttl_items()
 ```
+
 This would give you
+
 ```
 [(10, (1600067051.8508687, 3)), (8, (1600067051.8508747, 5)), (6, (1600067051.8508773, 6)), (7, (1600067051.850879, 8)), (4, (1600067051.8508801, 9)), (1, (1600067051.850882, 4))]
 [(9, (1600067051.8510616, 9)), (1, (1600067051.8510656, 1)), (2, (1600067051.851068, 7)), (4, (1600067051.85107, 10)), (6, (1600067051.851072, 8))]
@@ -150,21 +170,26 @@ This would give you
 ```
 
 To loop over keys, items and values, you can do so by
+
 ```
 for k,v in dict_ttl.items()
     print(k,v)
 ```
+
 Same goes for keys and values.
 
 
 <h4> set_ttl(), get_ttl(), is_expired() and expire_at()</h4>
 
 To get the ttl of any key in any type of dict, type
+
 ```
 dict_ttl.get_ttl(key)
 dict_ttl.get_ttl(2)
 ```
+
 This would give you
+
 ```
 29.99999451637268
 19.999989986419678
@@ -172,36 +197,43 @@ This would give you
 ```
 
 To set the ttl of any key of a dict, type
+
 ```
 dict_ttl.set_ttl(key, ttl) # ttl in seconds
 dict_ttl.set_ttl(2,10)
 ```
 
 This gives you the output
+
 ```
 [(1, (1600068321.1366003, 5)), (3, (1600068321.1366034, 6)), (2, (1600068301.136608, 9))]
 [(3, (1600068311.1367247, 5)), (1, (1600068311.136729, 2)), (2, (1600068301.136734, 2))]
 [(3, [(1600068301.1368098, [3, 1, 5, 3, 2])]), (1, [(1600068301.1368222, [4])]), (2, [(1600068301.1368265, [1, 1, 3])])]
 ```
+
 Note that in the first output, for regular dict, key 2 has ttl 20 seconds less than other items. This is because the original ttl was 30, and not it is 10. Similarly, for orderedDict it is 10 seconds less as original was 20, and for defaultDict(list) it is the same. 
 
 
 In the same manner, to manually set the ttl of a key in epoch, you can type
+
 ```
 dict_ttl.expire_at(key, timestamp) #timestamp in epoch
 dict_ttl.expire_at(2, time.time() + 10)
 ```
 
 This gives the output
+
 ```
 [(1, (1600069054.70139, 7)), (2, (1600069034.701402, 7)), (3, (1600069054.7013972, 4))]
 [(2, (1600069034.701553, (1600069044.7015424, 7))), (1, (1600069044.7015464, 5)), (3, (1600069044.7015486, 1))]
 [(3, [(1600069034.701688, [4, 4, 1])]), (1, [(1600069034.7016943, [5])]), (2, [(1600069034.7017086, [3, 2, 4, 1, 1])])]
 ```
+
 As before with set_ttl, the ttl for regular dict is 20 seconds less, orderedDict is 10 seconds less, and defaultDict(list) is the same.
 
 
 To check if an item has expired, you can use is_expired(). This returns the key if it has expired, and None if not.
+
 ```
 dict_ttl.is_expired(key)
 
@@ -216,12 +248,14 @@ print(dict_ttl.ttl_items())
 ```
 
 This gives the output
+
 ```
 None
 [(3, (1600069461.3600748, 5)), (2, (1600069441.3600852, 2)), (1, (1600069461.3600812, 7))]
 2
 [(3, (1600069461.3600748, 5)), (1, (1600069461.3600812, 7))]
 ```
+
 We set the ttl for key 2 to 10 seconds. Note that at first, before time.sleep(11), the key has not expired, so is_expired() returns none, and ttl_items() contain the key,value pair of 2.
 
 But after time.sleep(10), is_expired() returns 2, and ttl_items() does not contain the key 2.
@@ -235,6 +269,7 @@ It will perform a union and make a new dict that contains elements of both dict1
 Not available for DefaultDictTTL.
 
 Example (for DictTTL and OrderedDictTTL):
+
 ```
 data2 = {k: v for k, v in zip([random.randint(1, 5) for x in range(1, 10)], [random.randint(1, 10) for x in range(1, 10)])}
 dict_ttl2 = DictTTL(20, data2)
@@ -244,6 +279,7 @@ print(dict_ttl3)
 ```
 
 This will give you the output
+
 ```
 <TTLDict@0x7f9fc1a77320; ttl=30, Dict={5: (1600070209.1329722, 1), 4: (1600070209.1329756, 4), 3: (1600070209.132977, 1), 1: (1600070209.132978, 4)};>
 <TTLDict@0x7f9fc1a47da0; ttl=20, Dict={2: (1600070199.1329875, 10), 3: (1600070199.1329885, 3), 5: (1600070199.1329892, 4), 1: (1600070199.13299, 7)};>
@@ -254,6 +290,7 @@ This will give you the output
 Note that first dict contains key value pair (5,1) and and second dict contains key value pair (5,4). In this case (5,4) is used in the union dict as dictionary cannot have duplciate keys.
 
 Example for DefaultDictTTL:
+
 ```
 dict_ttl2 = DefaultDictTTL(10)
 [dict_ttl2.append_values(k, v) for k, v in zip([random.randint(1, 2) for x in range(1, 3)],[random.randint(1, 2) for x in range(1, 3)])]
@@ -262,6 +299,7 @@ result = DefaultDictTTL(10).dict_union(dict_ttl,dict_ttl2)
 ```
 
 Output of previous code is 
+
 ```
 <DefaultDictTTL@0x7f980e82c348; ttl=10, Dict=defaultdict(<class 'list'>, {1: [(1600071123.7458355, [1, 2])]});>
 <DefaultDictTTL@0x7f980e82c3a8; ttl=10, Dict=defaultdict(<class 'list'>, {2: [(1600071123.7458715, [1, 1])]});>
@@ -278,6 +316,7 @@ Example for DictTTL and OrderedDictTTL:
 dict_ttl3 = DictTTL(10,DictTTL(10).dict_intersection(dict_ttl,dict_ttl2))
 print(dict_ttl3)
 ```
+
 Output of the code is
 
 ```
@@ -306,12 +345,14 @@ defaultdict(<class 'list'>, {1: [(1600071557.9203734, [1, 1])]})
 
 This function sorts the dictionary by value. 
 For example, 
+
 ```
 print(dict_ttl.ttl_items())
 print(dict_ttl.sort_by_value(reverse=False))
 ```
 
 Output of the previous code is 
+
 ```
 [(3, (1600071865.3093538, 5)), (5, (1600071865.3093593, 4)), (2, (1600071865.3093617, 3)), (1, (1600071865.3093634, 1))]
 {1: (1, 1600071865.3093634), 2: (3, 1600071865.3093617), 5: (4, 1600071865.3093593), 3: (5, 1600071865.3093538)}
@@ -322,6 +363,7 @@ Output of the previous code is
 This function inverts the key and value mapping, keys become the value and value becomes the key
 
 Example:
+
 ```
 print(dict_ttl.ttl_items())
 print(dict_ttl.invert_dict_map())
