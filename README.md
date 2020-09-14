@@ -327,6 +327,30 @@ Output of the previous code is
 <TTLDict@0x7fafb9b74da0; ttl=30, Dict={3: (1600072079.4889877, 1), 4: (1600072079.4889824, 3), 1: (1600072079.4889843, 2), 5: (1600072079.488986, 4)};>
 ```
 
+
+<h3>Benchmark</h3>
+The results for appending data, search, delete and iteration are
+
+```
+DefaultDictTTL timeit, append get delete iter
+5.019643587002065
+0.000039
+0.029866200013202615
+0.1537732889992185
+
+OrderedDictTTL timeit, append get delete iter
+4.807904478002456
+0.000188
+0.0326753379922593
+0.7622569840023061
+
+DictTTL timeit, append get delete iter
+5.314774744998431
+0.000068
+0.015834389996598475
+0.5515550150012132
+```
+
 <h3>References</h3>
 This work builds upon the following works
 
