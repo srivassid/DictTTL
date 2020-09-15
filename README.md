@@ -1,6 +1,6 @@
 <h2>Dictionary with expiring keys</h2>
 
-<h6>A dictionary with a ttl attached to the keys which expire after a particular time. Includes dict(), OrderedDict() and defaultDict(list)</h6>
+<h5>A dictionary with a ttl attached to the keys which expire after a particular time. Includes dict(), OrderedDict() and defaultDict(list)</h5>
 
 
 To install, type
