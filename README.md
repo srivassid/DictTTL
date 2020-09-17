@@ -2,6 +2,8 @@
 
 <h5>A dictionary with a ttl attached to the keys which expire after a particular time. Includes dict(), OrderedDict() and defaultDict(list)</h5>
 
+Read real world application here
+https://medium.com/@sid7513/data-pipelines-and-expiring-dictionaries-3cb98ef66b94
 
 To install, type
 ```
