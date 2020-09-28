@@ -33,7 +33,30 @@ To import defaultDict(list) with keys that have TTL, type
 ```
 from DictTTL.DefaultDictTTL import DefaultDictTTL
 ```
+<h4>See it in action here</h4>
 
+```
+data = {'a': 10, 'b': 20}
+dict_ttl = DictTTL(5, data)
+for i in range(1,10):
+    dict_ttl.__len__()
+    print(dict_ttl)
+    time.sleep(1) 
+```
+
+Output 
+
+```
+<DictTTL@0x7f461b983160; ttl=5, Dict={'a': (1601329577.417387, 10), 'b': (1601329577.417391, 20)};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={'a': (1601329577.417387, 10), 'b': (1601329577.417391, 20)};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={'a': (1601329577.417387, 10), 'b': (1601329577.417391, 20)};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={'a': (1601329577.417387, 10), 'b': (1601329577.417391, 20)};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={'a': (1601329577.417387, 10), 'b': (1601329577.417391, 20)};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={};>
+<DictTTL@0x7f461b983160; ttl=5, Dict={};>
+```
 
 <h4>Add data</h4>
 
